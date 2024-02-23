@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "scconfluence"
+version = "0.1.0"
+description = "scConfluence is a novel diagonal integration method combining uncoupled autoencoders and Optimal Transport on single-cell data."
+authors = ["jules-samaran <jules.samaran@pasteur.fr>"]
+license = "GPL-3.0-only"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+scanpy = "^1.0.0"
+mudata = "^0.2.1"
+torch = "^2.0.0"
+pytorch-lightning = "^2.0.0"
+geomloss = "^0.2"
+pot = "^0.9.1"
+tensorboard = "^2.12.0"
+muon = "^0.1.0"
+
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

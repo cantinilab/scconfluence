@@ -1,0 +1,9 @@
+/sync_maestro.sh
+/retrieve_nb.sh
+/.DS_Store
+/.idea/
+/__pycache__/
+/scconfluence/__pycache__/
+/tests/__pycache__/
+/ipynb_checkpoints
+/lightning_logs
