@@ -1,8 +1,12 @@
 from scconfluence import dataset_utils, unimodal
 import numpy as np
 from torch.utils.data import DataLoader
-from context import (create_synthetic_adata, create_synthetic_mdata, run_unimodal_ae,
-                     run_scconfluence)
+from context import (
+    create_synthetic_adata,
+    create_synthetic_mdata,
+    run_unimodal_ae,
+    run_scconfluence,
+)
 
 
 def test_umodal_dataset():
