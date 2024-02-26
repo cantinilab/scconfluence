@@ -31,7 +31,7 @@ cd scconfluence
 pip install .
 ```
 
-### Test your installation (optional)
+### Test your development installation (optional)
 
 ```bash
 pip install pytest

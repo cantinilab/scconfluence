@@ -83,6 +83,7 @@ def run_unimodal_ae(
     n_hidden,
     n_latent,
     batch_key,
+    **ae_kwargs,
 ):
     adata = create_synthetic_adata(
         n_obs=n_obs, n_features=n_features, n_batch=n_batch, dim_pca=dim_pca
@@ -96,6 +97,7 @@ def run_unimodal_ae(
         n_latent=n_latent,
         batch_key=batch_key,
         type_loss=type_loss,
+        **ae_kwargs,
     )
     ae.fit(save_path=path, use_cuda=False, ratio_val=0.2, batch_size=32, max_epochs=2)
     adata.obsm["latent_embeddings"] = (

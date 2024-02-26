@@ -152,6 +152,24 @@ def test_binary_ae(tmp_path):
     )
 
 
+def test_batchnorm_ae(tmp_path):
+    run_unimodal_ae(
+        path=tmp_path,
+        n_obs=100,
+        n_features=200,
+        n_batch=3,
+        dim_pca=20,
+        rep_in="X_pca",
+        rep_out="binary",
+        type_loss="binary",
+        n_hidden=15,
+        n_latent=10,
+        batch_key="batches",
+        use_batch_norm_enc="standard",
+        use_batch_norm_dec="ds",
+    )
+
+
 def test_2modalities(tmp_path):
     dic_obs = {"mod1": 100, "mod2": 150}
     dic_features = {"mod1": 30, "mod2": 300}
