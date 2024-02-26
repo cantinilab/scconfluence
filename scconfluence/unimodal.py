@@ -64,7 +64,7 @@ class AutoEncoder(BaseModule):
         use_batch_norm_dec: Literal[None, "ds", "standard"] = None,
         dropout_rate: float = 0.0,
         var_eps: float = 1e-4,
-        deeply_inject_covariates_enc: bool = False,
+        deeply_inject_covariates_enc: bool = True,
         deeply_inject_covariates_dec: bool = True,
         positive_out: bool = False,
     ):
