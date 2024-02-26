@@ -1,6 +1,10 @@
 # scConfluence
 scConfluence is a novel method for the integration of unpaired multiomics data combining
-uncoupled autoencoders and Optimal Transport. Read the preprint! (!!!!add link!!!!)
+uncoupled autoencoders and Inverse Optimal Transport to learn low-dimensional cell 
+embeddings. These embeddings can then be used for visualization and clustering, useful 
+for discovering  subpopulations of cells, and for imputation of features across 
+modalities.
+Read the preprint! (!!!!add link!!!!)
 
 ![figure](model.png)
 
@@ -23,20 +27,23 @@ pip install scconfluence
 
 ```bash
 git clone git@github.com:cantinilab/scconfluence.git
-pip install ./scconfluence/
+cd scconfluence
+pip install .
 ```
 
 ### Test your installation (optional)
 
 ```bash
+pip install pytest
 pytest .
 ```
 
 ## Getting started
 
 scConfluence takes as an input a MuData object and populates its `obsm` field 
-with the latent embeddings. Visit !!!!!link docs!!!!! for more documentation and 
-tutorials.
+with the latent embeddings. Visit (read the docs page currently under preparation) for 
+more documentation and tutorials (which can be found now in the tutorials folder of 
+this repository).
 
 You may download a preprocessed 10X Multiome demo dataset [here](https://figshare.com/s/b0840d90e42e37fa165f).
 
@@ -79,4 +86,4 @@ sc.pl.umap(mdata)
 ```
 
 If you're looking for the repository with code to reproduce the experiments in our 
-preprint, [here is is!](!!!! add link !!!!)
+preprint, [here it is!](https://github.com/cantinilab/scc_reproducibility)
