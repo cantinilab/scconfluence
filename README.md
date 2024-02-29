@@ -1,6 +1,7 @@
 # scConfluence
 [![Tests](https://github.com/cantinilab/scconfluence/actions/workflows/main.yml/badge.svg)](https://github.com/cantinilab/scconfluence/actions/workflows/main.yml)
 [![codecov](https://codecov.io/github/cantinilab/scconfluence/graph/badge.svg?token=JCLE8L9GNH)](https://codecov.io/github/cantinilab/scconfluence)
+[![Documentation Status](https://readthedocs.org/projects/scconfluence/badge/?version=latest)](https://scconfluence.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://img.shields.io/pypi/v/scconfluence?color=blue)](https://img.shields.io/pypi/v/scconfluence?color=blue)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
@@ -46,7 +47,7 @@ pytest .
 ## Getting started
 
 scConfluence takes as an input a MuData object and populates its `obsm` field 
-with the latent embeddings. Visit (read the docs page currently under preparation) for 
+with the latent embeddings. Visit http://scconfluence.rtfd.io/ for 
 more documentation and tutorials (which can be found now in the tutorials folder of 
 this repository).
 
