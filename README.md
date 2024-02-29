@@ -1,10 +1,15 @@
 # scConfluence
+[![Tests](https://github.com/cantinilab/scconfluence/actions/workflows/main.yml/badge.svg)](https://github.com/cantinilab/scconfluence/actions/workflows/main.yml)
+[![codecov](https://codecov.io/github/cantinilab/scconfluence/graph/badge.svg?token=JCLE8L9GNH)](https://codecov.io/github/cantinilab/scconfluence)
+[![PyPI version](https://img.shields.io/pypi/v/scconfluence?color=blue)](https://img.shields.io/pypi/v/scconfluence?color=blue)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 scConfluence is a novel method for the integration of unpaired multiomics data combining
 uncoupled autoencoders and Inverse Optimal Transport to learn low-dimensional cell 
 embeddings. These embeddings can then be used for visualization and clustering, useful 
 for discovering  subpopulations of cells, and for imputation of features across 
 modalities.
-Read the preprint! (!!!!add link!!!!)
+[Read the preprint!](https://www.biorxiv.org/content/10.1101/2024.02.26.582051v1)
 
 ![figure](model.png)
 
@@ -13,7 +18,7 @@ Read the preprint! (!!!!add link!!!!)
 scConfluence is implemented as a Python package seamlessly integrated within the scverse 
 ecosystem, in particular Muon and Scanpy.
 
-### via PyPI (!!!!!!!!! not yet available!!!!!!!)
+### via PyPI
 
 On all operating systems, the easiest way to install scConfluence is via PyPI. 
 Installation should typically take a minute and is continuously tested with Python 3.10 
@@ -80,9 +85,16 @@ sc.pl.umap(mdata)
 ```
 
 ## Our preprint
-
+https://www.biorxiv.org/content/10.1101/2024.02.26.582051v1
 ```bibtex
-!!!! add citation !!!!
+@article {Samaran2024unpaired,
+  author = {Jules Samaran and Gabriel Peyre and Laura Cantini},
+  title = {scConfluence : single-cell diagonal integration with regularized Inverse Optimal Transport on weakly connected features},
+  year = {2024},
+  doi = {10.1101/2024.02.26.582051},
+  publisher = {Cold Spring Harbor Laboratory},
+  journal = {bioRxiv}
+}
 ```
 
 If you're looking for the repository with code to reproduce the experiments in our 

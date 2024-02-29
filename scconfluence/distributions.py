@@ -37,7 +37,8 @@ def log_zinb_positive(
     -----
     We parametrize the bernoulli using the logits, hence the softplus functions appearing.
     """
-    # theta is the dispersion rate. If .ndimension() == 1, it is shared for all cells (regardless of batch or labels)
+    # theta is the dispersion rate. If .ndimension() == 1, it is shared for all cells
+    # (regardless of batch or labels)
     if theta.ndimension() == 1:
         theta = theta.view(
             1, theta.size(0)
@@ -224,7 +225,7 @@ class NegativeBinomial(Distribution):
 
     def sample(
         self, sample_shape: Union[torch.Size, Tuple] = torch.Size()
-    ) -> torch.Tensor:
+    ) -> torch.Tensor:  # pragma: no cover
         with torch.no_grad():
             gamma_d = self._gamma()
             p_means = gamma_d.sample(sample_shape)
@@ -330,7 +331,7 @@ class ZeroInflatedNegativeBinomial(NegativeBinomial):
 
     def sample(
         self, sample_shape: Union[torch.Size, Tuple] = torch.Size()
-    ) -> torch.Tensor:
+    ) -> torch.Tensor:  # pragma: no cover
         with torch.no_grad():
             samp = super().sample(sample_shape=sample_shape)
             is_zero = torch.rand_like(samp) <= self.zi_probs
