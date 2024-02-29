@@ -7,14 +7,24 @@ Welcome to scConfluence's documentation!
 ========================================
 
 .. toctree::
+   :hidden:
    :maxdepth: 1
+   :glob:
    :caption: Tutorials
 
    tutorials/*.ipynb
+
 .. toctree::
    :hidden:
    :maxdepth: 3
    :caption: API
+
+   model
+   unimodal
+   base_module
+   nn
+   distributions
+   dataset_utils
 
 scConfluence is a novel method for the integration of unpaired multiomics data combining
 uncoupled autoencoders and Inverse Optimal Transport to learn low-dimensional cell
@@ -41,6 +51,7 @@ Installation should typically take a minute and is continuously tested with Pyth
 on an Ubuntu virtual machine.
 
 .. code-block:: bash
+
    pip install scconfluence
 
 
@@ -48,6 +59,7 @@ via GitHub (development version)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: bash
+
    git clone git@github.com:cantinilab/scconfluence.git
    cd scconfluence
    pip install .
@@ -57,6 +69,7 @@ Test your development installation (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: bash
+
    pip install pytest
    pytest .
 
@@ -71,6 +84,7 @@ You may download a preprocessed 10X Multiome demo dataset `here <https://figshar
 A GPU is not required for the method to run, but is strongly recommended.
 
 .. code-block:: python
+
    import scconfluence
    import mudata as md
    import scanpy as sc
