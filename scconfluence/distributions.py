@@ -11,9 +11,10 @@ from torch.distributions.utils import (
     probs_to_logits,
 )
 
-# The functions here have been copied from the scvi-tools repo (https://github.com/YosefLab/scvi-tools/) in order to
-# avoid adding scvi-tools to the installation requirements of this package as scvi-tools has many requirements and these
-# are quite auxiliary functions.
+# The functions here have been copied from the scvi-tools repo
+# (https://github.com/YosefLab/scvi-tools/) in order to avoid adding scvi-tools to the
+# installation requirements of this package as scvi-tools has many requirements and
+# these are quite auxiliary functions.
 
 
 def log_zinb_positive(
@@ -21,21 +22,6 @@ def log_zinb_positive(
 ):
     """
     Log likelihood (scalar) of a minibatch according to a zinb model.
-    Parameters
-    ----------
-    x
-        Data
-    mu
-        mean of the negative binomial (has to be positive support) (shape: minibatch x vars)
-    theta
-        inverse dispersion parameter (has to be positive support) (shape: minibatch x vars)
-    pi
-        logit of the dropout parameter (real support) (shape: minibatch x vars)
-    eps
-        numerical stability constant
-    Notes
-    -----
-    We parametrize the bernoulli using the logits, hence the softplus functions appearing.
     """
     # theta is the dispersion rate. If .ndimension() == 1, it is shared for all cells
     # (regardless of batch or labels)
@@ -70,19 +56,6 @@ def log_zinb_positive(
 def log_nb_positive(x: torch.Tensor, mu: torch.Tensor, theta: torch.Tensor, eps=1e-8):
     """
     Log likelihood (scalar) of a minibatch according to a nb model.
-    Parameters
-    ----------
-    x
-        data
-    mu
-        mean of the negative binomial (has to be positive support) (shape: minibatch x vars)
-    theta
-        inverse dispersion parameter (has to be positive support) (shape: minibatch x vars)
-    eps
-        numerical stability constant
-    Notes
-    -----
-    We parametrize the bernoulli using the logits, hence the softplus functions appearing.
     """
     if theta.ndimension() == 1:
         theta = theta.view(
@@ -105,23 +78,11 @@ def log_nb_positive(x: torch.Tensor, mu: torch.Tensor, theta: torch.Tensor, eps=
 def _convert_mean_disp_to_counts_logits(mu, theta, eps=1e-6):
     r"""
     NB parameterizations conversion.
-    Parameters
-    ----------
-    mu
-        mean of the NB distribution.
-    theta
-        inverse overdispersion.
-    eps
-        constant used for numerical log stability. (Default value = 1e-6)
-    Returns
-    -------
-    type
-        the number of failures until the experiment is stopped
-        and the success probability.
     """
     if not (mu is None) == (theta is None):
         raise ValueError(
-            "If using the mu/theta NB parameterization, both parameters must be specified"
+            "If using the mu/theta NB parameterization, "
+            "both parameters must be specified"
         )
     logits = (mu + eps).log() - (theta + eps).log()
     total_count = theta
@@ -131,16 +92,6 @@ def _convert_mean_disp_to_counts_logits(mu, theta, eps=1e-6):
 def _convert_counts_logits_to_mean_disp(total_count, logits):
     """
     NB parameterizations conversion.
-    Parameters
-    ----------
-    total_count
-        Number of failures until the experiment is stopped.
-    logits
-        success logits.
-    Returns
-    -------
-    type
-        the mean and inverse overdispersion of the NB distribution.
     """
     theta = total_count
     mu = logits.exp() * theta
@@ -163,21 +114,6 @@ class NegativeBinomial(Distribution):
     the experiment is stopped and `probs` the success probability. (2), (`mu`, `theta`)
     parameterization, which is the one used by scvi-tools. These parameters respectively
     control the mean and inverse dispersion of the distribution.
-    In the (`mu`, `theta`) parameterization, samples from the negative binomial are generated as follows:
-    1. :math:`w \sim \textrm{Gamma}(\underbrace{\theta}_{\text{shape}}, \underbrace{\theta/\mu}_{\text{rate}})`
-    2. :math:`x \sim \textrm{Poisson}(w)`
-    Parameters
-    ----------
-    total_count
-        Number of failures until the experiment is stopped.
-    probs
-        The success probability.
-    mu
-        Mean of the distribution.
-    theta
-        Inverse dispersion.
-    validate_args
-        Raise ValueError if arguments do not match constraints
     """
 
     arg_constraints = {
@@ -198,7 +134,8 @@ class NegativeBinomial(Distribution):
         self._eps = 1e-8
         if (mu is None) == (total_count is None):
             raise ValueError(
-                "Please use one of the two possible parameterizations. Refer to the documentation for more information."
+                "Please use one of the two possible parameterizations. "
+                "Refer to the documentation for more information."
             )
 
         using_param_1 = total_count is not None and (
@@ -262,23 +199,6 @@ class ZeroInflatedNegativeBinomial(NegativeBinomial):
     the experiment is stopped and `probs` the success probability. (2), (`mu`, `theta`)
     parameterization, which is the one used by scvi-tools. These parameters respectively
     control the mean and inverse dispersion of the distribution.
-    In the (`mu`, `theta`) parameterization, samples from the negative binomial are generated as follows:
-    1. :math:`w \sim \textrm{Gamma}(\underbrace{\theta}_{\text{shape}}, \underbrace{\theta/\mu}_{\text{rate}})`
-    2. :math:`x \sim \textrm{Poisson}(w)`
-    Parameters
-    ----------
-    total_count
-        Number of failures until the experiment is stopped.
-    probs
-        The success probability.
-    mu
-        Mean of the distribution.
-    theta
-        Inverse dispersion.
-    zi_logits
-        Logits scale of zero inflation probability.
-    validate_args
-        Raise ValueError if arguments do not match constraints
     """
 
     arg_constraints = {

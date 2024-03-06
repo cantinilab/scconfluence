@@ -12,7 +12,7 @@ Welcome to scConfluence's documentation!
    :glob:
    :caption: Tutorials
 
-   tutorials/*.ipynb
+   tutorials/*
 
 .. toctree::
    :hidden:
@@ -22,9 +22,9 @@ Welcome to scConfluence's documentation!
    model
    unimodal
    base_module
+   dataset_utils
    nn
    distributions
-   dataset_utils
 
 scConfluence is a novel method for the integration of unpaired multiomics data combining
 uncoupled autoencoders and Inverse Optimal Transport to learn low-dimensional cell

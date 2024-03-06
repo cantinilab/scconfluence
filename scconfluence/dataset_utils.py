@@ -10,9 +10,11 @@ import pytorch_lightning as pl
 
 class DictDataset(Dataset):
     """
-    Dataset class for dictionary data. It is a subclass of torch.utils.data.Dataset. It is meant to be used to load data
-    from a dictionary where all entries are indexed by the same observations. The keys of the dictionary are the fields
-    and the values are the data to be loaded.
+    Dataset class for dictionary data. It is a subclass of torch.utils.data.Dataset. It
+    is meant to be used to load data from a dictionary where all entries are indexed by
+    the same observations. The keys of the dictionary are the fields and the values are
+    the data to be loaded.
+
     :param dict_data: dictionary with the data.
     """
 
@@ -22,6 +24,7 @@ class DictDataset(Dataset):
     def __getitem__(self, index: np.ndarray) -> dict:
         """
         Get the data for a given index.
+
         :param index: index of the observations to be retrieved.
         :return: a dictionary with the data for the given index.
         """
@@ -39,6 +42,7 @@ class DictDataset(Dataset):
     def split_train_val(self, ratio_val: float) -> tuple[np.ndarray, np.ndarray]:
         """
         Split the dataset into a training and a validation set.
+
         :param ratio_val: proportion of cells to be used for validation.
         :return: the indices of the observations to be used for training and validation.
         """
@@ -53,6 +57,7 @@ class DictDataset(Dataset):
     def __len__(self) -> int:
         """
         Get the length of the dataset.
+
         :return: the number of observations in the dataset.
         """
         key = "batch_index"
@@ -62,10 +67,12 @@ class DictDataset(Dataset):
 class MModalDataset(Dataset):
     """
     Dataset class for multi-modal data. It is a subclass of torch.utils.data.Dataset.
-    :param datasets: dictionary with the data for each modality. The keys are the names of the modalities and the values
-    are the data for each modality stored in DictDataset objects.
-    :param cross_relations: dictionary with the cross-modal relations. The keys are the names of the pair of modalities
-    compared and the values are the cost matrices.
+
+    :param datasets: dictionary with the data for each modality. The keys are the names
+        of the modalities and the values are the data for each modality stored in
+        DictDataset objects.
+    :param cross_relations: dictionary with the cross-modal relations. The keys are the
+        names of the pair of modalities compared and the values are the cost matrices.
     """
 
     def __init__(
@@ -87,6 +94,7 @@ class MModalDataset(Dataset):
     def __getitem__(self, index: np.ndarray) -> dict:
         """
         Get the data for a given index.
+
         :param index: index of the observations to be retrieved.
         :return: a dictionary with the data for the given index.
         """
@@ -119,6 +127,7 @@ class MModalDataset(Dataset):
     def __len__(self) -> int:
         """
         Get the length of the dataset.
+
         :return: the number of observations in the dataset.
         """
         return sum([len(self.datasets[mod]) for mod in self.modalities])
@@ -126,6 +135,7 @@ class MModalDataset(Dataset):
     def split_train_val(self, ratio_val: float) -> tuple[np.ndarray, np.ndarray]:
         """
         Split the dataset into a training and a validation set.
+
         :param ratio_val: proportion of cells to be used for validation.
         :return: the indices of the observations to be used for training and validation.
         """
@@ -139,20 +149,9 @@ class MModalDataset(Dataset):
 
 class BatchSampler(torch.utils.data.sampler.Sampler):
     """
-    Code imported from https://github.com/scverse/scvi-tools/blob/master/scvi/dataloaders/_ann_dataloader.py
+    Code imported and adapted from
+    https://github.com/scverse/scvi-tools/blob/master/scvi/dataloaders/_ann_dataloader.py
     Custom torch Sampler that returns a list of indices of size batch_size.
-    Parameters
-    ----------
-    indices
-        list of indices to sample from
-    batch_size
-        batch size of each iteration
-    shuffle
-        if ``True``, shuffles indices before sampling
-    drop_last
-        if int, drops the last batch if its length is less than drop_last.
-        if drop_last == True, drops last non-full batch.
-        if drop_last == False, iterate over all batches.
     """
 
     def __init__(
@@ -212,7 +211,9 @@ class BatchSampler(torch.utils.data.sampler.Sampler):
 
 def format_batch(batch: dict) -> dict:
     """
-    Format the batch to be used in the model. It removes the batch dimension from the data and the cell index.
+    Format the batch to be used in the model. It removes the batch dimension from the
+    data and the cell index.
+
     :param batch: mini-batch of input data.
     :return: formatted mini-batch.
     """
@@ -240,17 +241,21 @@ def configure_unimodal_dataset(
 ) -> tuple[DictDataset, int, int, dict[str, int]]:
     """
     Create a dictionary dataset from an anndata.
+
     :param adata: data
-    :param rep_in: string indicating the entry of the Anndata where to look for the input data, i.e. the data used as
-    input of the encoder. If not None, the input data will be extracted from the obsm field of the AnnData object.
-    If None, the input data is assumed to be  the X field of the AnnData object.
-    :param rep_out: string indicating the entry of the Anndata where to look for the output data, i.e. the data used to
-    compare with the output of the decoder. If not None, the output data will be extracted from the layers field of the
-    AnnData object. If None, the output data is assumed to be  the X field of the AnnData object.
+    :param rep_in: string indicating the entry of the Anndata where to look for the
+        input data, i.e. the data used as input of the encoder. If not None, the input
+        data will be extracted from the obsm field of the AnnData object. If None, the
+        input data is assumed to be  the X field of the AnnData object.
+    :param rep_out: string indicating the entry of the Anndata where to look for the
+        output data, i.e. the data used to compare with the output of the decoder. If
+        not None, the output data will be extracted from the layers field of the AnnData
+        object. If None, the output data is assumed to be  the X field of the AnnData
+        object.
     :param batch_key: where to extract the batch information in the adata object
     :param modality: name of the data modality
-    :return: a DictDataset object, the input dimension, the output dimension and a dictionary mapping batch indexes to
-    their original name.
+    :return: a DictDataset object, the input dimension, the output dimension and a
+        dictionary mapping batch indexes to their original name.
     """
 
     def get_anndata_entry(field: str, key: str):
@@ -307,6 +312,7 @@ def configure_multimodal_dataset(
 ) -> MModalDataset:
     """
     Create the MModalDataset object from the MuData object
+
     :param mdata: the input data
     :param modality_pairs: the pairs of modalities for which a cost matrix is available
     :param unimodal_datasets: the unimodal datasets
@@ -329,14 +335,18 @@ def inference_dl_trainer(
     num_workers: int = 0,
 ) -> tuple[DataLoader, pl.Trainer]:
     """
-    Wrapper to create a DataLoader and a Trainer for the prediction after the end of the training of the model.
-    :param dataset: dataset to be used for the prediction (which has also benn used for the training).
+    Wrapper to create a DataLoader and a Trainer for the prediction after the end of the
+    training of the model.
+
+    :param dataset: dataset to be used for the prediction (which has also benn used for
+        the training).
     :param use_cuda: whether to use GPU acceleration if cuda is available.
-    :param batch_size: size of the mini-batches used for training. Not to be confused with the experimental batches.
-    :param pin_memory: If True, the data loader will copy Tensors into device/CUDA pinned memory before returning
-    them.
-    :param num_workers: how many subprocesses to use for data loading. 0 means that the data will be loaded in the
-    main process.
+    :param batch_size: size of the mini-batches used for training. Not to be confused
+        with the experimental batches.
+    :param pin_memory: If True, the data loader will copy Tensors into device/CUDA
+        pinned memory before returning them.
+    :param num_workers: how many subprocesses to use for data loading. 0 means that the
+        data will be loaded in the main process.
     :return: a DataLoader and a Trainer for the prediction.
     """
     loader = DataLoader(

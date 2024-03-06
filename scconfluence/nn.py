@@ -4,9 +4,9 @@ from torch import nn
 from torch.distributions import Normal
 import numpy as np
 
-# A few helper functions here have been copied from the scvi-tools repo and adapted for our use in order to avoid
-# adding scvi-tools to the installation requirements of this package as scvi-tools has many requirements.
-# Additionally, here we used the DSBN implementation from https://github.com/woozch/DSBN
+# A few helper functions here have been imported from the scvi-tools repo and adapted
+# for our use in order to avoid adding scvi-tools to the installation requirements of
+# this package as scvi-tools has many requirements.
 
 
 def one_hot(index: torch.Tensor, n_cat: int) -> torch.Tensor:
@@ -22,18 +22,14 @@ def reparameterize_gaussian(mu, var):
 
 class DSBatchNorm(nn.Module):
     """
-    Domain-specific Batch Normalization
+    Domain-specific Batch Normalization, implementation from
+    https://github.com/woozch/DSBN
+
+    :param num_features: dimension of the features
+    :param n_domain: domain number
     """
 
     def __init__(self, num_features, n_domain, eps=1e-5, momentum=0.1):
-        """
-        Parameters
-        ----------
-        num_features
-            dimension of the features
-        n_domain
-            domain number
-        """
         super().__init__()
         self.n_domain = n_domain
         self.num_features = num_features
@@ -74,31 +70,9 @@ class DSBatchNorm(nn.Module):
 
 class VariationalEncoder(nn.Module):
     """
-    Taken from https://github.com/YosefLab/scvi-tools/
-    Encodes data of ``n_input`` dimensions into a latent space of ``n_output`` dimensions.
-    Uses a fully-connected neural network of ``n_hidden`` layers.
-    Parameters
-    ----------
-    n_input
-        The dimensionality of the input (data space)
-    n_output
-        The dimensionality of the output (latent space)
-    n_layers
-        The number of fully-connected hidden layers
-    n_hidden
-        The number of nodes per hidden layer
-    dropout_rate
-        Dropout rate to apply to each of the hidden layers
-    var_eps
-        Minimum value for the variance;
-        used for numerical stability
-    var_activation
-        Callable used to ensure positivity of the variance.
-        When `None`, defaults to `torch.exp`.
-    cst_noise
-        Whether to only use the hardcoded constant var_eps for the variance of the variational distribution
-    **kwargs
-        Keyword args for :class:`~scvi.module._base.FCLayers`
+    Imported from https://github.com/YosefLab/scvi-tools/ and adapted.
+    Encodes data of ``n_input`` dimensions into a latent space of ``n_output``
+    dimensions. Uses a fully-connected neural network of ``n_hidden`` layers.
     """
 
     def __init__(
@@ -136,19 +110,6 @@ class VariationalEncoder(nn.Module):
     def forward(self, x: torch.Tensor, batch_index: torch.Tensor):
         r"""
         The forward computation for a single sample.
-         #. Encodes the data into latent space using the encoder network
-         #. Generates a mean \\( q_m \\) and variance \\( q_v \\)
-         #. Samples a new value from an i.i.d. multivariate normal \\( \\sim Ne(q_m, \\mathbf{I}q_v) \\)
-        Parameters
-        ----------
-        x
-            tensor with shape (n_input,)
-        batch_index
-            tensor
-        Returns
-        -------
-        3-tuple of :py:class:`torch.Tensor`
-            tensors of shape ``(n_latent,)`` for mean and var, and sample
         """
         # Parameters for latent distribution
         q = self.encoder(x, batch_index)
@@ -160,21 +121,9 @@ class VariationalEncoder(nn.Module):
 
 class DecoderPeakVI(torch.nn.Module):
     """
-    Taken from https://github.com/YosefLab/scvi-tools/
+    Imported from https://github.com/YosefLab/scvi-tools/ and adapted.
     Decodes data from latent space of ``n_input`` dimensions ``n_output``dimensions.
     Uses a fully-connected neural network of ``n_hidden`` layers.
-    Parameters
-    ----------
-    n_input
-        The dimensionality of the input (latent space)
-    n_output
-        The dimensionality of the output (data space)
-    n_layers
-        The number of fully-connected hidden layers
-    n_hidden
-        The number of nodes per hidden layer
-    use_batch_norm
-        Whether to use batch norm in layers
     """
 
     def __init__(
@@ -211,21 +160,9 @@ class DecoderPeakVI(torch.nn.Module):
 
 class DecoderSCVI(nn.Module):
     """
-    Taken from https://github.com/YosefLab/scvi-tools/
-    Decodes data from latent space of ``n_input`` dimensions into ``n_output``dimensions.
-    Uses a fully-connected neural network of ``n_hidden`` layers.
-    Parameters
-    ----------
-    n_input
-        The dimensionality of the input (latent space)
-    n_output
-        The dimensionality of the output (data space)
-    n_layers
-        The number of fully-connected hidden layers
-    n_hidden
-        The number of nodes per hidden layer
-    use_batch_norm
-        Whether to use batch norm in layers
+    Imported from https://github.com/YosefLab/scvi-tools/ and adapted.
+    Decodes data from latent space of ``n_input`` dimensions into ``n_output``
+    dimensions. Uses a fully-connected neural network of ``n_hidden`` layers.
     """
 
     def __init__(
@@ -275,27 +212,6 @@ class DecoderSCVI(nn.Module):
     ):
         """
         The forward computation for a single sample.
-         #. Decodes the data from the latent space using the decoder network
-         #. Returns parameters for the ZINB distribution of expression
-         #. If ``dispersion != 'gene-cell'`` then value for that param will be ``None``
-        Parameters
-        ----------
-        dispersion
-            One of the following
-            * ``'gene'`` - dispersion parameter of NB is constant per gene across cells
-            * ``'gene-batch'`` - dispersion can differ between different batches
-            * ``'gene-label'`` - dispersion can differ between different labels
-            * ``'gene-cell'`` - dispersion can differ for every gene in every cell
-        z :
-            tensor with shape ``(n_input,)``
-        log_library
-            log library size
-        batch_index
-            tensor of batch membership(s) for this sample
-        Returns
-        -------
-        4-tuple of :py:class:`torch.Tensor`
-            parameters for the ZINB distribution of expression
         """
         # The decoder returns values for the parameters of the ZINB distribution
         px = self.px_decoder(z, batch_index)
@@ -312,6 +228,12 @@ class DecoderSCVI(nn.Module):
 
 
 def get_batch_norm(flag, n_out, n_batch):
+    """
+    Wrapper to obtain a batch normalization layer.
+    :param flag: whether to use batch norm and which type
+    :param n_out: the number of features
+    :param n_batch: the number of batches in the data
+    """
     if flag is None:
         return None
     elif flag == "standard" or (flag == "ds" and n_batch == 0):
@@ -326,7 +248,7 @@ def get_batch_norm(flag, n_out, n_batch):
 
 class FCLayers(nn.Module):
     """
-    Taken from https://github.com/YosefLab/scvi-tools/
+    Imported from https://github.com/YosefLab/scvi-tools/ and adapted.
     """
 
     def __init__(

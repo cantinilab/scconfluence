@@ -23,7 +23,9 @@ def check_aes(
     unimodal_aes: dict[str, AutoEncoder],
 ):
     """
-    Check that the AutoEncoders and the mdata object are consistent, raises a ValueError if not.
+    Check that the AutoEncoders and the mdata object are consistent, raises a ValueError
+    if not.
+
     :param mdata: the input data
     :param unimodal_aes: dictionary of AutoEncoder objects for each modality
     """
@@ -52,30 +54,40 @@ def check_aes(
 
 class ScConfluence(BaseModule):
     """
-    The ScConfluence model aims to learn a common latent space for multiple data modalities from unpaired measurements.
+    The ScConfluence model aims to learn a common latent space for multiple data
+    modalities from unpaired measurements.
 
     :param mdata: the input data
     :param unimodal_aes: dictionary of AutoEncoder objects for each modality
-    :param mass: mass parameter for the IOT loss which controls the unbalancedness of the transport plan. Between 0 and
-    1 this corresponds to the proportion of the cells that will be matched across modalities in each mini-batch during
-    training. Decreasing this parameter will lead to more robustness towards modality-specific cell populations
-    which should not be aligned with cells from other modalities. Even for datasets where the same cell populations are
-    roughly expected in the different modalities 0.5 is a good default as transporting less mass is less problematic
-    than transporting too much.
-    :param reach: reach parameter which controls the unbalancedness of the Sinkhorn regularization. Lower values will
-    lead to a more unbalanced sinkhorn divergence. When trying to enforce a more complete mixing of cells from different
-    modalities in the latent space, a higher reach value can be used. Only values between 0.1 and 5. are recommended.
-    :param blur: blur parameter for the Sinkhorn regularization. This parameter controls the strength of the entropic
-    term in the sinkhorn regularization. Increasing this parameter makes the computation of the sinkhorn term faster but
-    less accurate.
-    :param iot_loss_weight: weight of the IOT loss in the final loss. It can be set higher than its default value of
-    0.01 in situations where the cost matrix between modalities is assumed to be of very high quality (e.g. NOT when
-    comparing scRNA expressions and scATAC-derived gene activities). Only values between 0.005 and 0.1 are recommended
-    :param sinkhorn_loss_weight: weight of the Sinkhorn regularization term in the final loss. Setting it higher than
-    its default value of 0.1 can be useful when trying to enforce a more complete mixing of cells from different
-    modalities. On the opposite, when integrating more than two modalities, it can be useful to set it lower
-    (e.g. to 0.3) since less regularization will be required to align the modalities (3 pair-wise terms are enforced).
-    Only values between 0.01 and 0.5 are recommended.
+    :param mass: mass parameter for the IOT loss which corresponds to the proportion of
+        the cells (between 0 and 1) that will be matched across modalities in each
+        mini-batch during training, decreasing this parameter will lead to more
+        robustness towards modality-specific cell populations which should not be
+        aligned with cells from other modalities (even for datasets where the same cell
+        populations are roughly expected in the different modalities 0.5 is a good
+        default as transporting less mass is less problematic than transporting too
+        much).
+    :param reach: reach parameter which controls the unbalancedness of the Sinkhorn
+        regularization. Lower values will lead to a more unbalanced sinkhorn divergence.
+        When trying to enforce a more complete mixing of cells from different modalities
+        in the latent space, a higher reach value can be used. Only values between 0.1
+        and 5. are recommended.
+    :param blur: blur parameter for the Sinkhorn regularization. This parameter controls
+        the strength of the entropic term in the sinkhorn regularization. Increasing
+        this parameter makes the computation of the sinkhorn term faster but less
+        accurate.
+    :param iot_loss_weight: weight of the IOT loss in the final loss. It can be set
+        higher than its default value of 0.01 in situations where the cost matrix
+        between modalities is assumed to be of very high quality (e.g. NOT when
+        comparing scRNA expressions and scATAC-derived gene activities). Only values
+        between 0.005 and 0.1 are recommended.
+    :param sinkhorn_loss_weight: weight of the Sinkhorn regularization term in the final
+        loss. Setting it higher than its default value of 0.1 can be useful when trying
+        to enforce a more complete mixing of cells from different modalities. On the
+        opposite, when integrating more than two modalities, it can be useful to set it
+        lower (e.g. to 0.3) since less regularization will be required to align the
+        modalities (3 pair-wise terms are enforced). Only values between 0.01 and 0.5
+        are recommended.
     """
 
     def __init__(
@@ -118,10 +130,13 @@ class ScConfluence(BaseModule):
         self, x: dict[str, dict[str, torch.Tensor]]
     ) -> dict[str, dict[str, torch.Tensor]]:
         """
-        Get encodings of the input data. The results of the embedding on each modality's cells with its corresponding
-        AutoEncoder's encoder are returned in a dictionary with the same structure as the input data.
-        :param x: input data mini_batch. A dictionary of dictionaries, where the first level
-        correspond to the modalities and the second level correspond to the data for each modality.
+        Get encodings of the input data. The results of the embedding on each modality's
+        cells with its corresponding AutoEncoder's encoder are returned in a dictionary
+        with the same structure as the input data.
+
+        :param x: input data mini_batch. A dictionary of dictionaries, where the first
+            level correspond to the modalities and the second level correspond to the
+            data for each modality.
         :return: inference results (latent embeddings, ...) for each modality
         """
         inference_output = {
@@ -133,12 +148,15 @@ class ScConfluence(BaseModule):
         self, inference_output: dict[str, dict[str, torch.Tensor]]
     ) -> dict[str, dict[str, torch.Tensor]]:
         """
-        Perform generative step on the inference results. The results of the generative step on each modality done by
-        its corresponding AutoEncoder's decoder are returned in a dictionary with
-        the same structure as the inference_output.
-        :param inference_output: inference results on mini_batch. A dictionary of dictionaries, where the first level
-        correspond to the modalities and the second level correspond to the data for each modality.
-        :return: generative results for each modality, contains the reconstructed data (decodings of the embeddings).
+        Perform generative step on the inference results. The results of the generative
+        step on each modality done by its corresponding AutoEncoder's decoder are
+        returned in a dictionary with the same structure as the inference_output.
+
+        :param inference_output: inference results on mini_batch. A dictionary of
+            dictionaries, where the first level correspond to the modalities and the
+            second level correspond to the data for each modality.
+        :return: generative results for each modality, contains the reconstructed data
+            (decodings of the embeddings).
         """
         generative_output = {
             mod: self.aes[mod].generative(inference_output[mod])
@@ -150,11 +168,14 @@ class ScConfluence(BaseModule):
         self, x: dict[str, dict[str, torch.Tensor]]
     ) -> tuple[np.ndarray, np.ndarray]:
         """
-        Get the latent embeddings for the input data. Used for prediction after the training of the model.
-        :param x: input data mini_batch. A dictionary of dictionaries, where the first level
-        correspond to the modalities and the second level correspond to the data for each modality.
-        :return: The latent embeddings and their corresponding observation names to ensure proper indexing of the
-         results.
+        Get the latent embeddings for the input data. Used for prediction after the
+        training of the model.
+
+        :param x: input data mini_batch. A dictionary of dictionaries, where the first
+            level correspond to the modalities and the second level correspond to the
+            data for each modality.
+        :return: The latent embeddings and their corresponding observation names to
+            ensure proper indexing of the results.
         """
         latents_and_indexes = {
             mod: self.aes[mod].latent_batch(x[mod]) for mod in self.modalities
@@ -171,15 +192,19 @@ class ScConfluence(BaseModule):
         self, x, imp_from: str, imp_to: str, to_batch: str | None
     ) -> tuple[np.ndarray, np.ndarray]:
         """
-        Perform imputation from one modality to another on a mini-batch after the end of the training. The imputation is
-        done by first encoding in the latent space cells from the modality imp_from, and then decoding these embeddings
-        into the modality imp_to.
+        Perform imputation from one modality to another on a mini-batch after the end of
+        the training. The imputation is done by first encoding in the latent space cells
+        from the modality imp_from, and then decoding these embeddings into the modality
+        imp_to.
+
         :param x: input data mini_batch.
-        :param imp_from: the modality of cells for which we want to perform the imputation.
+        :param imp_from: the modality of cells for which we want to perform the
+            imputation.
         :param imp_to: the modality of the features we want to impute.
-        :param to_batch: the batch of the modality imp_to to use for the imputation. If None, use the first batch.
-        :return: The imputations and their corresponding observation names to ensure proper indexing of the
-         results.
+        :param to_batch: the batch of the modality imp_to to use for the imputation. If
+            None, use the first batch.
+        :return: The imputations and their corresponding observation names to ensure
+            proper indexing of the results.
         """
         inference_dic = self.aes[imp_from].inference(x)
         inference_dic["z"] = inference_dic["qz_m"]
@@ -197,12 +222,16 @@ class ScConfluence(BaseModule):
         self, batch: dict[str, dict[str, torch.Tensor]], batch_idx
     ) -> dict[str, np.ndarray]:
         """
-        Perform a prediction step on a mini-batch. The prediction step can be either imputation or latent embedding.
-        :param batch: the input data mini-batch. Not to be confused with cell experimental batches.
-        :param batch_idx: index of the mini-batch in the dataset. Not to be confused with cell experimental batches.
-        Not used in this function but required by PyTorch Lightning.
-        :return: dictionary with results of predictions and their corresponding observation names to ensure proper
-        indexing.
+        Perform a prediction step on a mini-batch. The prediction step can be either
+        imputation or latent embedding.
+
+        :param batch: the input data mini-batch. Not to be confused with cell
+            experimental batches.
+        :param batch_idx: index of the mini-batch in the dataset. Not to be confused
+            with cell experimental batches. Not used in this function but required by
+            PyTorch Lightning.
+        :return: dictionary with results of predictions and their corresponding
+            observation names to ensure proper indexing.
         """
         batch = format_batch(batch)
         if self.predict_mode == "imputation":
@@ -229,26 +258,37 @@ class ScConfluence(BaseModule):
         **dl_kwargs,
     ) -> pd.DataFrame:
         """
-        Perform imputation from one modality to another on the whole dataset after the end of the training.
-        :param impute_from: the modality of cells for which we want to perform the imputation.
+        Perform imputation from one modality to another on the whole dataset after the
+        end of the training.
+
+        :param impute_from: the modality of cells for which we want to perform the
+            imputation.
         :param impute_to: the modality of the features we want to impute.
-        :param to_batch: the batch of the modality impute_to to use for the imputation. If None, use the first batch.
+        :param to_batch: the batch of the modality impute_to to use for the imputation.
+            If None, use the first batch.
         :param use_cuda: whether to use GPU acceleration if cuda is available.
         :param batch_size: size of the mini-batches used for the imputation.
         :param dl_kwargs: additional keyword arguments for the DataLoader.
-        :return: The imputations a dataFrame indexed by their observation names from the input MuData.
+        :return: The imputations a dataFrame indexed by their observation names from the
+            input MuData.
         """
         error_message = ""
         if not self.trained:
             error_message += (
-                "Model has not been trained yet. Use .fit() to train the model before imputing. If you "
-                "want the imputations nonetheless, set the attribute <trained> to true manually for the "
-                "model and rerun this function.\n"
+                "Model has not been trained yet. Use .fit() to train the model before "
+                "imputing. If you want the imputations nonetheless, set the attribute "
+                "<trained> to true manually for the  model and rerun this function.\n"
             )
         if impute_from not in self.modalities:
-            error_message += f"impute_from should be one of the following modalities: {self.modalities}\n"
+            error_message += (
+                f"impute_from should be one of the following "
+                f"modalities: {self.modalities}\n"
+            )
         if impute_to not in self.modalities:
-            error_message += f"impute_to should be one of the following modalities: {self.modalities}\n"
+            error_message += (
+                f"impute_to should be one of the following "
+                f"modalities: {self.modalities}\n"
+            )
         if impute_from == impute_to:
             error_message += (
                 "impute_from and impute_to should be different modalities.\n"
@@ -283,9 +323,11 @@ class ScConfluence(BaseModule):
     ) -> torch.Tensor:
         """
         Compute the IOT loss between two sets of latent embeddings.
+
         :param z_1: latent embeddings from the first modality.
         :param z_2: latent embeddings from the second modality.
-        :param c_cross: cost matrix between the two modalities. Rows correspond to z_1 and columns to z_2.
+        :param c_cross: cost matrix between the two modalities. Rows correspond to z_1
+            and columns to z_2.
         :return: The IOT loss.
         """
         p = ot.unif(z_1.size(0), type_as=c_cross)
@@ -301,6 +343,7 @@ class ScConfluence(BaseModule):
     def get_sinkhorn_reg(self, z_1: torch.Tensor, z_2: torch.Tensor) -> torch.Tensor:
         """
         Compute the Sinkhorn regularization term between two sets of latent embeddings.
+
         :param z_1: latent embeddings from the first modality.
         :param z_2: latent embeddings from the second modality.
         :return: the unbalanced Sinkhorn regularization term.
@@ -320,13 +363,18 @@ class ScConfluence(BaseModule):
     ) -> dict[str, torch.Tensor]:
         """
         Compute all the losses for the model.
-        :param x: input data mini_batch. A dictionary of dictionaries, where the first level
-        correspond to the modalities and the second level correspond to the data for each modality.
-        :param inference_output: The results of the encoding of input data for each modality in a
-        dictionary with the same structure as the input data. Contains the latent embeddings.
-        :param generative_output: The results of the decoding of the inferred embeddings for each modality in a
-        dictionary with the same structure as the input data. Contains the reconstruction of the data.
-        :param reduce: whether to reduce the cell reconstruction losses to a single scalar or not.
+
+        :param x: input data mini_batch. A dictionary of dictionaries, where the first
+            level correspond to the modalities and the second level correspond to the
+            data for each modality.
+        :param inference_output: The results of the encoding of input data for each
+            modality in a dictionary with the same structure as the input data. Contains
+            the latent embeddings.
+        :param generative_output: The results of the decoding of the inferred embeddings
+            for each modality in a dictionary with the same structure as the input data.
+            Contains the reconstruction of the data.
+        :param reduce: whether to reduce the cell reconstruction losses to a single
+            scalar or not.
         :return: The weighted sum of all sum terms which constitute the final loss.
         """
         unimodal_losses = {
@@ -386,8 +434,10 @@ class ScConfluence(BaseModule):
     ):
         """
         Log the norms of the latent embeddings for each modality.
-        :param inference_dic: The results of the encoding of input data for each modality in a
-        dictionary with the same structure as the input data. Contains the latent embeddings.
+
+        :param inference_dic: The results of the encoding of input data for each
+            modality in a dictionary with the same structure as the input data. Contains
+            the latent embeddings.
         :param return_log: unused parameter
         """
         for mod in self.modalities:
@@ -397,7 +447,8 @@ class ScConfluence(BaseModule):
 
     def reset_log_metrics(self):
         """
-        Reset the metrics to log at the beginning of each new optimization step on a mini-batch.
+        Reset the metrics to log at the beginning of each new optimization step on a
+        mini-batch.
         """
         self.metrics_to_log = []
         for mod in self.modalities:

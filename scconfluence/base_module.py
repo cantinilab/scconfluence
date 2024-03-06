@@ -58,8 +58,9 @@ class BaseModule(pl.LightningModule):
 
     def forward(self, x, return_loss=False):
         """
-        Forward pass of the model. It returns the reconstruction and the latent embeddings of the input data and
-        optionally the full loss.
+        Forward pass of the model. It returns the reconstruction and the latent
+        embeddings of the input data and optionally the full loss.
+
         :param x: input mini-batch
         :param return_loss: whether to return the full loss or not.
         """
@@ -105,21 +106,31 @@ class BaseModule(pl.LightningModule):
     ):
         """
         Train the model on the dataset witch which it was initialized.
+
         :param save_path: path in which logs and model checkpoints will be saved.
         :param use_cuda: whether to use GPU acceleration if cuda is available.
         :param ratio_val: ratio of the dataset to be used for the validation split.
-        :param batch_size: size of the mini-batches used for training. Not to be confused with the experimental batches.
-        :param pin_memory: If True, the data loader will copy Tensors into device/CUDA pinned memory before returning them.
-        :param num_workers: how many subprocesses to use for data loading. 0 means that the data will be loaded in the main process.
-        :param max_epochs: max number of epochs used for training. Convergence is often reached before this number.
+        :param batch_size: size of the mini-batches used for training. Not to be
+            confused with the experimental batches.
+        :param pin_memory: If True, the data loader will copy Tensors into device/CUDA
+            pinned memory before returning them.
+        :param num_workers: how many subprocesses to use for data loading. 0 means that
+            the data will be loaded in the main process.
+        :param max_epochs: max number of epochs used for training. Convergence is often
+            reached before this number.
         :param lr: learning rate,used for training.
         :param early_stopping: whether to use early stopping.
         :param es_metric: which logged metric to use for early stopping.
-        :param patience: Number of epochs to wait before stopping training if the monitored early stopping metric does not improve.
-        :param es_mode: "min" or "max depending on whether the early stopping metric should be minimized or maximized.
-        :param test_mode: when testing, the model will only be trained for 5 epochs with only 10 mini-batches per epoch.
-        :param save_models: whether to save the checkpoint of the best model according to the early stopping metric.
-        :param trainer_kwargs: additional arguments to be passed to the pytorch_lightning.Trainer.
+        :param patience: Number of epochs to wait before stopping training if the
+            monitored early stopping metric does not improve.
+        :param es_mode: "min" or "max depending on whether the early stopping metric
+            should be minimized or maximized.
+        :param test_mode: when testing, the model will only be trained for 5 epochs with
+            only 10 mini-batches per epoch.
+        :param save_models: whether to save the checkpoint of the best model according
+            to the early stopping metric.
+        :param trainer_kwargs: additional arguments to be passed to the
+            pytorch_lightning.Trainer.
         """
         indices_train, indices_val = self.dataset.split_train_val(ratio_val=ratio_val)
         tr_loader = DataLoader(
@@ -162,7 +173,8 @@ class BaseModule(pl.LightningModule):
                 device = "gpu"
             else:
                 warnings.warn(
-                    "use_cuda has been set to True but cuda is not available on this machine."
+                    "use_cuda has been set to True but cuda is not available on this "
+                    "machine."
                 )
 
         fast_dev_run = False
@@ -201,19 +213,22 @@ class BaseModule(pl.LightningModule):
     ) -> pd.DataFrame:
         """
         Get the latent embeddings of all cells of the dataset from the trained model.
+
         :param use_cuda: whether to use GPU acceleration if available.
-        :param batch_size: size of the mini-batches used for training. Not to be confused with the experimental batches.
-        :param pin_memory: If True, the data loader will copy Tensors into device/CUDA pinned memory before returning
-        them.
-        :param num_workers: how many subprocesses to use for data loading. 0 means that the data will be loaded in the
-        main process.
-        :return: dataframe with the latent embeddings of all cells of the dataset, indexed by their observation names.
+        :param batch_size: size of the mini-batches used for training. Not to be
+            confused with the experimental batches.
+        :param pin_memory: If True, the data loader will copy Tensors into device/CUDA
+            pinned memory before returning them.
+        :param num_workers: how many subprocesses to use for data loading. 0 means that
+            the data will be loaded in the main process.
+        :return: dataframe with the latent embeddings of all cells of the dataset,
+            indexed by their observation names.
         """
         if not self.trained:
             raise ValueError(
-                "Model has not been trained yet. Use .fit() to train the model before imputing. If you "
-                "want the imputations nonetheless, set the attribute <trained> to true manually for the "
-                "model and rerun this function.\n"
+                "Model has not been trained yet. Use .fit() to train the model before "
+                "imputing. If you want the imputations nonetheless, set the attribute "
+                "<trained> to true manually for the  model and rerun this function.\n"
             )
         loader, trainer = inference_dl_trainer(
             self.dataset,
@@ -237,6 +252,14 @@ class BaseModule(pl.LightningModule):
         return latents
 
     def train_val_step(self, batch, split):
+        """
+        Wrapper to perform a training or validation step. It returns the loss of the
+        mini-batch.
+
+        :param batch: input data mini-batch
+        :param split: whether the mini-batch is part of the training or validation set.
+        :return: loss of the model on the mini-batch.
+        """
         self.reset_log_metrics()
         batch = format_batch(batch)
         _, inference_dic, loss = self.forward(batch, return_loss=True)
@@ -245,15 +268,27 @@ class BaseModule(pl.LightningModule):
         return loss
 
     def training_step(self, batch, batch_idx):
+        """
+        Use the `train_val_step` method to perform a training step.
+
+        :return: loss of the model on the mini-batch.
+        """
         return self.train_val_step(batch=batch, split="train")
 
     def validation_step(self, batch, batch_idx):
+        """
+        Use the `train_val_step` method to perform a validation step.
+
+        :return: loss of the model on the mini-batch.
+        """
         return self.train_val_step(batch=batch, split="validation")
 
     def log_all_metrics(self, split: Literal["train", "val"]):
         """
         Log all metrics in self.metrics_to_log for the given split.
-        :param split: whether the metrics are being logged for a training or validation mini-batch.
+
+        :param split: whether the metrics are being logged for a training or validation
+            mini-batch.
         """
         if split == "train":
             prefix = "tr"
@@ -268,8 +303,17 @@ class BaseModule(pl.LightningModule):
             self.log(**log_params)
 
     def configure_optimizers(self) -> optim.Optimizer:
+        """
+        Configure the optimizer used for training.
+
+        :return: the optimizer object.
+        """
         optimizer = optim.AdamW(self.parameters(), lr=self.lr)
         return optimizer
 
     def optimizer_zero_grad(self, epoch, batch_idx, optimizer):
+        """
+        Resets the gradients of the optimized tensors. We set the gradients to None to
+        improve the performance.
+        """
         optimizer.zero_grad(set_to_none=True)

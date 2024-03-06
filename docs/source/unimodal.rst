@@ -1,3 +1,6 @@
+unimodal
+--------------------
+
 .. automodule:: scconfluence.unimodal
    :members:
    :undoc-members:

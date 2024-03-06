@@ -1,3 +1,6 @@
+distributions
+--------------------
+
 .. automodule:: scconfluence.distributions
    :members:
    :undoc-members:

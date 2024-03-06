@@ -15,34 +15,47 @@ from scconfluence.dataset_utils import format_batch, configure_unimodal_dataset
 
 class AutoEncoder(BaseModule):
     """
-    Autoencoder model for unimodal single-cell data. This is a generic model designed to handle different types of data
-    (e.g. RNA, ATAC, etc.) and different types of losses (e.g. L2, ZINB, etc.). For high dimensional modalities, such as
-    RNA and ATAC, the model can use input data different from the one used to assess the quality of the reconstruction.
-    Foe example, the input data can be the PCA projection of the normalized counts and the output data can be the raw
-    counts.
+    Autoencoder model for unimodal single-cell data. This is a generic model designed to
+    handle different types of data (e.g. RNA, ATAC, etc.) and different types of losses
+    (e.g. L2, ZINB, etc.). For high dimensional modalities, such as RNA and ATAC, the
+    model can use input data different from the one used to assess the quality of the
+    reconstruction. For example, the input data can be the PCA projection of the
+    normalized counts and the output data can be the raw counts.
+
     :param adata: AnnData object containing the data.
     :param modality: string indicating the modality of the data.
-    :param rep_in: string indicating the entry of the Anndata where to look for the input data, i.e. the data used as
-    input of the encoder. If not None, the input data will be extracted from the obsm field of the AnnData object.
-    If None, the input data is assumed to be  the X field of the AnnData object.
-    :param rep_out: string indicating the entry of the Anndata where to look for the output data, i.e. the data used to
-    compare with the output of the decoder. If not None, the output data will be extracted from the layers field of the
-    AnnData object. If None, the output data is assumed to be  the X field of the AnnData object.
-    :param batch_key: If the data is not composed of multiple experimental batches than this should be set to None.
-    Otherwise, this string indicates the entry in the obs field of the Anndata where to look for the batch information.
+    :param rep_in: string indicating the entry of the Anndata where to look for the
+        input data, i.e. the data used as input of the encoder. If not None, the input
+        data will be extracted from the obsm field of the AnnData object. If None, the
+        input data is assumed to be  the X field of the AnnData object.
+    :param rep_out: string indicating the entry of the Anndata where to look for the
+        output data, i.e. the data used to compare with the output of the decoder. If
+        not None, the output data will be extracted from the layers field of the AnnData
+        object. If None, the output data is assumed to be  the X field of the AnnData
+        object.
+    :param batch_key: If the data is not composed of multiple experimental batches than
+        this should be set to None. Otherwise, this string indicates the entry in the
+        obs field of the Anndata where to look for the batch information.
     :param n_hidden: number of hidden units in the encoder and decoder.
     :param n_latent: number of latent dimensions.
-    :param type_loss: string indicating the type of loss to use. It can be "l2", "zinb", "nb", "poisson" or "binary".
+    :param type_loss: string indicating the type of loss to use. It can be "l2", "zinb",
+        "nb", "poisson" or "binary".
     :param reconstruction_weight: weight of the reconstruction loss.
-    :param avg_feat: if True, the reconstruction loss is averaged over the features, otherwise it is summed.
+    :param avg_feat: if True, the reconstruction loss is averaged over the features,
+        otherwise it is summed.
     :param n_layers_enc: number of layers in the encoder.
     :param n_layers_dec: number of layers in the decoder.
-    :param use_batch_norm_enc: if not None, it indicates the type of batch normalization to use in the encoder.
-    :param use_batch_norm_dec: if not None, it indicates the type of batch normalization to use in the decoder.
+    :param use_batch_norm_enc: if not None, it indicates the type of batch normalization
+        to use in the encoder.
+    :param use_batch_norm_dec: if not None, it indicates the type of batch normalization
+        to use in the decoder.
     :param dropout_rate: dropout rate to use in the encoder and decoder.
-    :param var_eps: small positive value to add to the variance of the posterior distribution.
-    :param deeply_inject_covariates_enc: if True, the batch_index is deeply injected in the encoder.
-    :param deeply_inject_covariates_dec: if True, the batch_index is deeply injected in the decoder.
+    :param var_eps: small positive value to add to the variance of the posterior
+        distribution.
+    :param deeply_inject_covariates_enc: if True, the batch_index is deeply injected in
+        the encoder.
+    :param deeply_inject_covariates_dec: if True, the batch_index is deeply injected in
+        the decoder.
     :param positive_out: if True, the output of the decoder is forced to be positive.
     """
 
@@ -82,12 +95,13 @@ class AutoEncoder(BaseModule):
             warnings.warn("n_hidden should be larger than n_latent")
         if n_latent > dim_in:
             raise warnings.warn(
-                "n_latent should be smaller than the number of features used as input for "
-                "the autoencoder"
+                "n_latent should be smaller than the number of features used as input "
+                "for the autoencoder"
             )
         if n_latent > dim_out:
             raise warnings.warn(
-                "n_latent should be smaller than the dimension of the reconstructed data"
+                "n_latent should be smaller than the dimension of the reconstructed "
+                "data"
             )
 
         self.n_hidden = n_hidden
@@ -163,11 +177,12 @@ class AutoEncoder(BaseModule):
 
     def inference(self, x: dict[str, torch.Tensor]) -> dict[str, torch.Tensor]:
         """
-        Encoding step of the model which consists in a forward pass through the model's encoder.
-        library size.
+        Encoding step of the model which consists in a forward pass through the model's
+        encoder.
+
         :param x: input mini-batch of data.
-        :return: the latent embeddings (parameters of the posterior distribution), the library size and
-        the batch indices.
+        :return: the latent embeddings (parameters of the posterior distribution), the
+            library size and the batch indices.
         """
         z_m, z_v, z = self.z_encoder(x["input"], x["batch_index"])
         if self.type_loss == "binary":
@@ -182,7 +197,9 @@ class AutoEncoder(BaseModule):
         self, inference_output: dict[str, torch.Tensor]
     ) -> dict[str, torch.Tensor]:
         """
-        Generative step of the model which consists in a forward pass through the model's decoder.
+        Generative step of the model which consists in a forward pass through
+        the model's decoder.
+
         :param inference_output: output of the encoder (inference step).
         :return: the output of the decoder.
         """
@@ -217,10 +234,12 @@ class AutoEncoder(BaseModule):
     ) -> torch.Tensor:
         """
         Compute the reconstruction loss.
+
         :param x: input mini-batch of data.
         :param inference_output: output of the encoder (inference step).
         :param generative_output: output of the decoder (generative step).
-        :param reduce: whether to reduce the cell reconstruction losses to a single scalar or not.
+        :param reduce: whether to reduce the cell reconstruction losses to a single
+            scalar or not.
         :return: the reconstruction loss.
         """
         loss = torch.tensor([[0.0]])
@@ -263,12 +282,15 @@ class AutoEncoder(BaseModule):
         reduce: bool = True,
     ) -> dict[str, torch.Tensor]:
         """
-        Compute all loss terms of the model. For an AutoEncoder model, this means only the reconstruction loss but
-        for future developments other losses can be added to this model.
+        Compute all loss terms of the model. For an AutoEncoder model, this means only
+        the reconstruction loss but for future developments other losses can be added to
+        this model.
+
         :param x: mini-batch input data.
         :param inference_output: output of the encoder (inference step).
         :param generative_output: output of the decoder (generative step).
-        :param reduce: whether to reduce the cell reconstruction losses to a single scalar or not.
+        :param reduce: whether to reduce the cell reconstruction losses to a single
+            scalar or not.
         :return: a dictionary containing all loss terms used to train the model.
         """
         r_loss = self.reconstr_loss(
@@ -289,7 +311,9 @@ class AutoEncoder(BaseModule):
 
     def latent_batch(self, x: dict[str, torch.Tensor]) -> tuple[np.ndarray, np.ndarray]:
         """
-        Get latent embeddings for a mini-batch of data. Used for prediction after the training of the model.
+        Get latent embeddings for a mini-batch of data. Used for prediction after the
+        training of the model.
+
         :param x: mini-batch of input data.
         :return: latent embeddings and their corresponding observation names.
         """
@@ -297,6 +321,11 @@ class AutoEncoder(BaseModule):
         return inf_dic["qz_m"].detach().cpu().numpy(), np.array(x["cell_index"])
 
     def predict_step(self, batch, batch_idx):
+        """
+        Predict the latent embeddings for a mini-batch of data.
+
+        :return: latent embeddings and their corresponding observation names.
+        """
         batch = format_batch(batch)
         latents, cell_idxes = self.latent_batch(batch)
         return {"latents": latents, "cell_idxes": cell_idxes}
@@ -306,6 +335,7 @@ class AutoEncoder(BaseModule):
     ):
         """
         Log the norm of the latent embeddings.
+
         :param inference_dic: output of the encoder (inference step).
         :param return_log: whether to return the log or not.
         :return: if return_log is true, return the log to be printed.

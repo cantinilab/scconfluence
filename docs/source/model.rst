@@ -1,3 +1,6 @@
+model
+--------------------
+
 .. automodule:: scconfluence.model
    :members:
    :undoc-members:
