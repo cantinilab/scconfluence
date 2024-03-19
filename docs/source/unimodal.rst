@@ -1,4 +1,4 @@
-unimodal
+Unimodal autoencoder
 --------------------
 
 .. automodule:: scconfluence.unimodal

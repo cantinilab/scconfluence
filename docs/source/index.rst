@@ -14,6 +14,8 @@ Welcome to scConfluence's documentation!
 
    tutorials/*
 
+   faq
+
 .. toctree::
    :hidden:
    :maxdepth: 3

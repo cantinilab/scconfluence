@@ -1,4 +1,4 @@
-model
+ScConfluence model
 --------------------
 
 .. automodule:: scconfluence.model

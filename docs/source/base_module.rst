@@ -1,4 +1,4 @@
-base_module
+Abstract model class
 --------------------
 
 .. automodule:: scconfluence.base_module

@@ -1,4 +1,4 @@
-nn
+Neural network utils
 --------------------
 
 .. automodule:: scconfluence.nn

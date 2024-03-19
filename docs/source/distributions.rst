@@ -1,4 +1,4 @@
-distributions
+distributions utils
 --------------------
 
 .. automodule:: scconfluence.distributions
