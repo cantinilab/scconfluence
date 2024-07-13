@@ -5,7 +5,7 @@ If you encounter an issue or have a question that is not addressed in this FAQ,
 please open an issue on the `github repository <https://github.com/cantinilab/scconfluence>`_.
 
 What should I do if the inferred latent embeddings from different modalities are completely separated?
-""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 There are two parameters that can be adjusted to avoid this issue. The first one is the
 `sinkhorn_loss_weight` parameter, which controls the weight of the Sinkhorn loss in the
 overall loss function. Increasing it should lead to a more mixed latent space but this
@@ -15,7 +15,7 @@ Increasing it will lead to a more less mass being discarded from the sinkhorn
 regularization's transport plan and therefore to a more mixed latent space.
 
 What should I do if the inferred cell embeddings from one (or more) modality don't seem to preserve their structure?
-""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 If you have access to cell labels for one modality, you
 might want to plot those information on top of the UMAP of the inferred embeddings to
