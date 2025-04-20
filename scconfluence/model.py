@@ -403,26 +403,28 @@ class ScConfluence(BaseModule):
             mod2 = mod_pair.split("+")[1]
             z_1 = inference_output[mod1]["z"]
             z_2 = inference_output[mod2]["z"]
-            iot_loss = self.get_iot_loss(z_1=z_1, z_2=z_2, c_cross=c_cross)
-            self.metrics_to_log.append(
-                {
-                    "name": "iot_loss_{}".format(mod_pair),
-                    "value": iot_loss,
-                    "batch_size": 1,
-                    "reduce_fx": torch.mean,
-                }
-            )
-            sinkhorn_loss = self.get_sinkhorn_reg(z_1=z_1, z_2=z_2)
-            self.metrics_to_log.append(
-                {
-                    "name": "sinkhorn_reg_{}".format(mod_pair),
-                    "value": sinkhorn_loss,
-                    "batch_size": 1,
-                    "reduce_fx": torch.mean,
-                }
-            )
-            iot_loss += iot_loss
-            sinkhorn_loss += sinkhorn_loss
+            # only compute ot losses if there are cells from both mods in the minibatch
+            if len(z_1) * len(z_2) > 0:
+                iot_loss = self.get_iot_loss(z_1=z_1, z_2=z_2, c_cross=c_cross)
+                self.metrics_to_log.append(
+                    {
+                        "name": "iot_loss_{}".format(mod_pair),
+                        "value": iot_loss,
+                        "batch_size": 1,
+                        "reduce_fx": torch.mean,
+                    }
+                )
+                sinkhorn_loss = self.get_sinkhorn_reg(z_1=z_1, z_2=z_2)
+                self.metrics_to_log.append(
+                    {
+                        "name": "sinkhorn_reg_{}".format(mod_pair),
+                        "value": sinkhorn_loss,
+                        "batch_size": 1,
+                        "reduce_fx": torch.mean,
+                    }
+                )
+                iot_loss += iot_loss
+                sinkhorn_loss += sinkhorn_loss
         loss_dic["iot_loss"] = self.iot_loss_weight * iot_loss
         loss_dic["sinkhorn_reg"] = self.sinkhorn_loss_weight * sinkhorn_loss
         return loss_dic
