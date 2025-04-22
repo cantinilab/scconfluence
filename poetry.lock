@@ -134,30 +134,35 @@ files = [
 
 [[package]]
 name = "anndata"
-version = "0.10.5.post1"
+version = "0.11.3"
 description = "Annotated data."
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 files = [
-    {file = "anndata-0.10.5.post1-py3-none-any.whl", hash = "sha256:3be9d5863d60d7a72d57a6e0392a3e7f3bb2bbfc79a038ddc53192a41517f5fc"},
-    {file = "anndata-0.10.5.post1.tar.gz", hash = "sha256:9a17c6eda9fc40759b3f5f81742f5d18c1a0a1acdf02f13e1646700ec082c155"},
+    {file = "anndata-0.11.3-py3-none-any.whl", hash = "sha256:2ce220c4c03b7dba31fab0540d3d64f6811bc343cd3f273d7bdeed50a5cd6367"},
+    {file = "anndata-0.11.3.tar.gz", hash = "sha256:986e626b62108e8db7034db2f391fd160c11d4b4e3af9c31183c82862297f7f6"},
 ]
 
 [package.dependencies]
-array-api-compat = "*"
+array-api-compat = ">1.4,<1.5 || >1.5"
 exceptiongroup = {version = "*", markers = "python_version < \"3.11\""}
-h5py = ">=3"
+h5py = ">=3.7"
 natsort = "*"
-numpy = ">=1.16.5"
-packaging = ">=20"
-pandas = ">=1.1.1,<2.1.0rc0 || >2.1.0rc0,<2.1.2 || >2.1.2"
-scipy = ">1.4"
+numpy = ">=1.23"
+packaging = ">=20.0"
+pandas = ">=1.4,<2.1.0rc0 || >2.1.0rc0,<2.1.2 || >2.1.2"
+scipy = ">1.8"
 
 [package.extras]
-dev = ["pytest-xdist", "setuptools-scm"]
-doc = ["awkward (>=2.0.7)", "ipython", "myst-parser", "nbsphinx", "readthedocs-sphinx-search", "scanpydoc[theme,typehints] (>=0.13.4)", "sphinx (>=4.4)", "sphinx-autodoc-typehints (>=1.11.0)", "sphinx-book-theme (>=1.1.0)", "sphinx-copybutton", "sphinx-design (>=0.5.0)", "sphinx-issues", "sphinxext-opengraph", "zarr"]
+cu11 = ["cupy-cuda11x"]
+cu12 = ["cupy-cuda12x"]
+dask = ["dask[array] (>=2022.09.2,<2024.8.dev0 || >=2024.10.dev0)"]
+dev = ["pytest-xdist", "setuptools-scm", "towncrier (>=24.8.0)"]
+dev-doc = ["towncrier (>=24.8.0)"]
+dev-test = ["pytest-xdist"]
+doc = ["awkward (>=2.3)", "ipython", "myst-parser", "nbsphinx", "readthedocs-sphinx-search", "scanpydoc[theme,typehints] (>=0.14.1)", "sphinx (>=7.4.6)", "sphinx-autodoc-typehints (>=2.2.0)", "sphinx-book-theme (>=1.1.0)", "sphinx-copybutton", "sphinx-design (>=0.5.0)", "sphinx-issues", "sphinx-toolbox (>=3.8.0)", "sphinxext-opengraph", "towncrier (>=24.8.0)", "zarr (<3)"]
 gpu = ["cupy"]
-test = ["awkward (>=2.3)", "boltons", "dask[array,distributed]", "httpx", "joblib", "loompy (>=3.0.5)", "matplotlib", "openpyxl", "pyarrow", "pytest (>=6.0)", "pytest-cov (>=2.10)", "pytest-memray", "scanpy", "scikit-learn", "zarr"]
+test = ["awkward (>=2.3)", "boltons", "dask[array] (>=2022.09.2,<2024.8.dev0 || >=2024.10.dev0)", "dask[distributed]", "httpx", "joblib", "loompy (>=3.0.5)", "matplotlib", "openpyxl", "pyarrow", "pytest (>=8.2,<8.3.4)", "pytest-cov (>=2.10)", "pytest-memray", "pytest-mock", "scanpy (>=1.9.8)", "scikit-learn", "zarr (<3)"]
 
 [[package]]
 name = "array-api-compat"
@@ -1519,23 +1524,21 @@ tests = ["pytest (>=4.6)"]
 
 [[package]]
 name = "mudata"
-version = "0.2.3"
-description = "Multimodal omics analysis framework"
+version = "0.3.1"
+description = "Multimodal data"
 optional = false
-python-versions = ">= 3.8"
+python-versions = ">=3.10"
 files = [
-    {file = "mudata-0.2.3-py3-none-any.whl", hash = "sha256:39f234b5943d800d30622009e448189fbc635b6f9b51b985f9e6926b313ea7a0"},
-    {file = "mudata-0.2.3.tar.gz", hash = "sha256:45288ac150bfc598d68acb7c2c1c43c38c5c39522107e04f7efbf3360c7f2035"},
+    {file = "mudata-0.3.1-py3-none-any.whl", hash = "sha256:d3a5ce96c3fcb64077be936758cc71657475905a4bbeeeba17c9ff48173f6c9d"},
+    {file = "mudata-0.3.1.tar.gz", hash = "sha256:452f166861539c118e99c432725fc6ced6064d96d333413a306cb5b04992b963"},
 ]
 
 [package.dependencies]
-anndata = ">=0.8"
-h5py = "*"
-numpy = "*"
-pandas = "*"
+anndata = ">=0.10.8"
 
 [package.extras]
-docs = ["nbsphinx", "pydata-sphinx-theme (==0.8.1)", "readthedocs-sphinx-search", "sphinx (>=4.0)", "sphinx-book-theme (==0.3.3)", "sphinx_automodapi"]
+dev = ["setuptools-scm"]
+docs = ["nbsphinx", "pydata-sphinx-theme", "readthedocs-sphinx-search", "recommonmark", "sphinx", "sphinx-automodapi", "sphinx-book-theme"]
 test = ["zarr"]
 
 [[package]]
@@ -2069,11 +2072,7 @@ files = [
 ]
 
 [package.dependencies]
-numpy = [
-    {version = ">=1.22.4,<2", markers = "python_version < \"3.11\""},
-    {version = ">=1.23.2,<2", markers = "python_version == \"3.11\""},
-    {version = ">=1.26.0,<2", markers = "python_version >= \"3.12\""},
-]
+numpy = {version = ">=1.22.4,<2", markers = "python_version < \"3.11\""}
 python-dateutil = ">=2.8.2"
 pytz = ">=2020.1"
 tzdata = ">=2022.7"
@@ -3714,5 +3713,5 @@ multidict = ">=4.0"
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.10"
-content-hash = "20792cb1bef6b3791df4718f1cd1e563a97def5ad083a75d2b2923fba24eedd1"
+python-versions = ">=3.10,<3.11"
+content-hash = "467f611ff7c15d8f2c8b8ff4aedac67f0d64953857d01ddc24dfbd0024593b92"
